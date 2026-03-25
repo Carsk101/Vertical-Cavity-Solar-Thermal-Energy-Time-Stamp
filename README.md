@@ -1,1 +1,3 @@
 # Vertical-Cavity-Solar-Thermal-Energy-TimeStamp
+
+VCST (Vertical Cavity Solar Thermal) is a high-DNI solar-thermal concept that uses a vertical cavity receiver and a small number of SiC + carbon foam tubes to turn concentrated sunlight into both electricity and high‑grade heat. Compared to PV and conventional tower CSP on the same land, VCST targets ~45% more electricity per acre and significantly higher total useful energy, while keeping energy payback and lifetime EROI competitive by using industrial-grade materials and a heat‑first design. This repo is a timestamped concept + numbers dump for the VCST idea as of 2026‑03‑25.
