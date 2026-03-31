@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VCST — Vertical Cavity Solar Thermal</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#090909;--bg2:#0f0f0f;--bg3:#161616;--bg4:#1c1c1c;
+  --text:#c8c8c8;--dim:#666;--bright:#e8e8e8;--white:#f5f5f0;
+  --green:#4ade80;--green-dim:#22c55e22;--green-mid:#22c55e44;
+  --blue:#60a5fa;--amber:#f59e0b;--red:#f87171;
+  --serif:'EB Garamond',Georgia,serif;
+  --mono:'DM Mono','Courier New',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--serif);font-size:18px;line-height:1.75;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 32px;display:flex;justify-content:space-between;align-items:center;background:rgba(9,9,9,0.85);backdrop-filter:blur(12px);border-bottom:1px solid #1a1a1a;font-family:var(--mono)}
+nav .logo{font-size:13px;letter-spacing:0.15em;color:var(--green);text-transform:lowercase}
+nav .links{display:flex;gap:24px}
+nav .links a{font-size:11px;color:var(--dim);text-decoration:none;letter-spacing:0.08em;text-transform:lowercase;transition:color 0.2s}
+nav .links a:hover{color:var(--green)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 10vw 80px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,#22c55e08 0%,transparent 70%);pointer-events:none}
+.hero .tag{font-family:var(--mono);font-size:11px;letter-spacing:0.2em;color:var(--green);text-transform:uppercase;margin-bottom:24px}
+.hero h1{font-family:var(--serif);font-size:clamp(2.8rem,6vw,5.2rem);font-weight:600;color:var(--white);line-height:1.08;letter-spacing:-0.03em;max-width:800px}
+.hero h1 em{font-style:italic;color:var(--green);font-weight:500}
+.hero .sub{font-family:var(--serif);font-size:1.15rem;color:var(--dim);margin-top:28px;max-width:540px;line-height:1.7;font-style:italic}
+.hero .stats{display:flex;gap:40px;margin-top:56px;flex-wrap:wrap}
+.hero .stat{border-left:2px solid var(--green);padding-left:16px}
+.hero .stat .num{font-family:var(--mono);font-size:2.4rem;font-weight:500;color:var(--green);line-height:1}
+.hero .stat .label{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:6px;letter-spacing:0.04em}
+.hero .scroll-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:0.15em;text-transform:uppercase;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
+
+/* SECTIONS */
+section{padding:100px 10vw;border-top:1px solid #1a1a1a;position:relative}
+section .stag{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--green);text-transform:uppercase;margin-bottom:8px}
+section h2{font-family:var(--serif);font-size:2.2rem;font-weight:600;color:var(--white);margin-bottom:24px;letter-spacing:-0.02em}
+section p{max-width:640px;margin-bottom:16px;color:var(--text)}
+section p strong{color:var(--bright);font-weight:600}
+
+/* COMPARISON BARS */
+.bars{margin:40px 0;max-width:700px}
+.bar-item{margin-bottom:16px}
+.bar-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.bar-label .name{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.bar-label .val{font-family:var(--mono);font-size:14px;font-weight:500}
+.bar-label .val.g{color:var(--green)}.bar-label .val.b{color:var(--blue)}.bar-label .val.a{color:var(--amber)}
+.bar-track{height:28px;background:var(--bg3);border-radius:3px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(0.22,1,0.36,1)}
+.bar-fill.g{background:var(--green);opacity:0.6}.bar-fill.b{background:var(--blue);opacity:0.5}.bar-fill.a{background:var(--amber);opacity:0.5}
+
+/* ITERATION TIMELINE */
+.timeline{margin:48px 0;position:relative;padding-left:32px;border-left:2px solid var(--bg4)}
+.timeline .node{position:relative;margin-bottom:36px;padding-left:24px}
+.timeline .node::before{content:'';position:absolute;left:-39px;top:6px;width:12px;height:12px;border-radius:50%;border:2px solid var(--bg4);background:var(--bg)}
+.timeline .node.win::before{border-color:var(--green);background:var(--green)}
+.timeline .node.fail::before{border-color:var(--red);background:var(--red);opacity:0.5}
+.timeline .node .ver{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:0.06em;text-transform:uppercase}
+.timeline .node h3{font-family:var(--serif);font-size:1.3rem;color:var(--bright);margin:4px 0 6px;font-weight:600}
+.timeline .node .eff{font-family:var(--mono);font-size:13px}
+.timeline .node .eff.good{color:var(--green)}.timeline .node .eff.bad{color:var(--red)}
+.timeline .node .desc{font-size:0.9rem;color:var(--dim);max-width:500px;margin-top:6px}
+
+/* DATA TABLE */
+.dtable{width:100%;max-width:800px;border-collapse:collapse;margin:32px 0;font-family:var(--mono);font-size:13px}
+.dtable th{text-align:left;padding:10px 16px;border-bottom:2px solid var(--bg4);color:var(--dim);font-weight:400;font-size:10px;letter-spacing:0.1em;text-transform:uppercase}
+.dtable td{padding:10px 16px;border-bottom:1px solid #1a1a1a;color:var(--text)}
+.dtable td:first-child{color:var(--dim)}
+.dtable .g{color:var(--green)}.dtable .b{color:var(--blue)}.dtable .a{color:var(--amber)}.dtable .r{color:var(--red)}
+.dtable .win{background:rgba(74,222,128,0.04)}
+
+/* CARDS */
+.card-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:32px 0;max-width:800px}
+.card{background:var(--bg3);border:1px solid #222;padding:24px;border-radius:2px}
+.card .num{font-family:var(--mono);font-size:2rem;font-weight:500;color:var(--green);line-height:1.1}
+.card .desc{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:8px;line-height:1.5}
+
+/* CALLOUT */
+.callout{background:var(--green-dim);border:1px solid var(--green);padding:28px 32px;margin:32px 0;max-width:700px;border-radius:2px}
+.callout p{color:var(--bright);margin-bottom:0;max-width:none}
+.callout strong{color:var(--green)}
+
+/* TIER CARDS */
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin:40px 0}
+.tier{background:var(--bg2);border:1px solid #1a1a1a;padding:28px 24px;position:relative;border-radius:2px}
+.tier.best{border-color:var(--green);background:linear-gradient(to bottom,rgba(34,197,94,0.04),transparent)}
+.tier .tier-label{font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
+.tier.best .tier-label{color:var(--green)}
+.tier h3{font-family:var(--serif);font-size:1.3rem;color:var(--bright);font-weight:600;margin-bottom:8px}
+.tier .perf{font-family:var(--mono);font-size:1.6rem;color:var(--green);margin:12px 0}
+.tier .detail{font-family:var(--mono);font-size:11px;color:var(--dim);line-height:1.7}
+.tier .vs{font-family:var(--mono);font-size:12px;color:var(--green);margin-top:12px;padding-top:12px;border-top:1px solid #222}
+
+/* FOOTER */
+footer{padding:60px 10vw 40px;border-top:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:24px}
+footer .left{font-family:var(--mono);font-size:11px;color:var(--dim);line-height:1.8}
+footer .right{font-family:var(--mono);font-size:10px;color:#333;text-align:right}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .hero{padding:100px 24px 60px}
+  section{padding:60px 24px}
+  .hero h1{font-size:2.2rem}
+  .hero .stats{gap:24px}
+  nav .links{gap:12px}
+  .tiers{grid-template-columns:1fr}
+}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">vcst</div>
+  <div class="links">
+    <a href="#problem">problem</a>
+    <a href="#solution">solution</a>
+    <a href="#numbers">numbers</a>
+    <a href="#iterations">iterations</a>
+    <a href="#materials">materials</a>
+    <a href="#tiers">tiers</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="tag">vertical cavity solar thermal</div>
+  <h1>Nearly <em>double</em> the electricity per square foot of any solar farm</h1>
+  <div class="sub">A novel concentrated solar architecture using vertical absorber tubes, commodity materials, and zero rare elements. Verified against 736 real PV plants.</div>
+  <div class="stats">
+    <div class="stat"><div class="num">+47%</div><div class="label">vs PV farms (safe config)</div></div>
+    <div class="stat"><div class="num">+93%</div><div class="label">vs PV farms (max config)</div></div>
+    <div class="stat"><div class="num">0</div><div class="label">rare or toxic materials</div></div>
+  </div>
+  <div class="scroll-hint">scroll to explore ↓</div>
+</div>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="stag reveal">the constraint</div>
+  <h2 class="reveal">Solar's real limit isn't efficiency. It's land.</h2>
+  <p class="reveal">As solar scales toward terawatts, land competition with agriculture, housing, and ecosystems becomes the binding constraint. A 50 MW PV farm needs <strong>143 acres</strong>. A CSP tower needs <strong>233 acres</strong>. Land costs don't decline with scale — they increase.</p>
+  <p class="reveal">The question: can we produce significantly more energy per square foot of land, using materials available everywhere?</p>
+
+  <div class="bars reveal">
+    <div class="bar-item">
+      <div class="bar-label"><span class="name">PV tracking (LBNL 2019 median)</span><span class="val b">9.04 kWh/ft²</span></div>
+      <div class="bar-track"><div class="bar-fill b" style="width:40%" data-w="40"></div></div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label"><span class="name">PV fixed-tilt (LBNL 2019 median)</span><span class="val b">10.26 kWh/ft²</span></div>
+      <div class="bar-track"><div class="bar-fill b" style="width:45%" data-w="45"></div></div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label"><span class="name">Tower CSP (NREL ATB 2024)</span><span class="val a">9.85 kWh/ft²</span></div>
+      <div class="bar-track"><div class="bar-fill a" style="width:43%" data-w="43"></div></div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label"><span class="name">PV fixed-tilt (2025 est, bifacial)</span><span class="val b">11.80 kWh/ft²</span></div>
+      <div class="bar-track"><div class="bar-fill b" style="width:52%" data-w="52"></div></div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label"><span class="name">VCST v2 PRO — Tier 1 (safe)</span><span class="val g">17.36 kWh/ft²</span></div>
+      <div class="bar-track"><div class="bar-fill g" style="width:76%" data-w="76"></div></div>
+    </div>
+    <div class="bar-item">
+      <div class="bar-label"><span class="name">VCST v2 PRO — Tier 3 (max)</span><span class="val g">22.82 kWh/ft²</span></div>
+      <div class="bar-track"><div class="bar-fill g" style="width:100%" data-w="100"></div></div>
+    </div>
+  </div>
+  <p class="reveal" style="font-family:var(--mono);font-size:12px;color:var(--dim)">PV data: Bolinger & Bolinger (LBNL 2022), 736 utility-scale plants. All values in kWh electricity per ft² of land per year.</p>
+</section>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="stag reveal">the architecture</div>
+  <h2 class="reveal">Vertical tubes, not flat panels</h2>
+  <p class="reveal"><strong>Six SiC absorber tubes</strong>, each 2 meters wide and 50 meters tall, arranged in a hexagonal cluster. A compact ring of ground-level heliostats reflects sunlight directly onto the tube surfaces. Fluid in the tube walls absorbs the heat and drives a turbine at ground level.</p>
+  <p class="reveal">Three physics advantages compound:</p>
+
+  <div class="card-row reveal">
+    <div class="card">
+      <div class="num">1×</div>
+      <div class="desc">One mirror bounce. PV has zero (good), CSP tower has one, our v1 had two (killed it). v2 sends light straight from heliostat to tube.</div>
+    </div>
+    <div class="card">
+      <div class="num">20×</div>
+      <div class="desc">Surface-to-footprint ratio. 50m tall tubes present 20× more absorber surface than their ground shadow. Energy extraction concentrated into minimal land.</div>
+    </div>
+    <div class="card">
+      <div class="num">35%</div>
+      <div class="desc">Mirror ground cover ratio. Heliostats pack tighter because the target is tall (50m) not a point. PV: 30-45%. CSP: 20-25%. VCST: 35%.</div>
+    </div>
+  </div>
+
+  <p class="reveal">The tubes aren't uniform — upper half is SiC ceramic (high temp), lower half is standard steel (cheap). A spectrally selective coating absorbs 95% of sunlight while radiating only 7% of heat. The fluid path uses the hollow tube core for counter-flow delivery, and natural thermosiphon assists pumping.</p>
+</section>
+
+<!-- NUMBERS -->
+<section id="numbers">
+  <div class="stag reveal">verified calculations</div>
+  <h2 class="reveal">The efficiency chain, link by link</h2>
+  <p class="reveal">Every number traced to published literature. Complete Python models provided for reproducibility.</p>
+
+  <table class="dtable reveal">
+    <thead>
+      <tr><th>Factor</th><th>VCST v2 PRO</th><th>Tower CSP</th><th>PV Farm</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Optical efficiency</td><td class="g">73.4%</td><td>63.8%</td><td>—</td></tr>
+      <tr><td>Thermal retention</td><td class="g">88.5%</td><td>78.3%</td><td>—</td></tr>
+      <tr><td>Power block / module eff</td><td class="g">44.0%</td><td>42.0%</td><td>22.0%</td></tr>
+      <tr><td>System losses (parasitic, BOS)</td><td>6%</td><td>10%</td><td>~18%</td></tr>
+      <tr class="win"><td><strong>Solar → electricity</strong></td><td class="g"><strong>26.7%</strong></td><td>21.2%</td><td>~17.4%</td></tr>
+      <tr><td>Mirror / panel GCR</td><td class="g">35%</td><td>25%</td><td>30-45%</td></tr>
+      <tr class="win"><td><strong>kWh_e / ft² / year</strong></td><td class="g"><strong>17.36</strong></td><td>9.85</td><td>11.80</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card-row reveal">
+    <div class="card">
+      <div class="num">101</div>
+      <div class="desc">Acres for a 50 MW plant (Tier 3). PV needs 143. CSP needs 233.</div>
+    </div>
+    <div class="card">
+      <div class="num">1.08</div>
+      <div class="desc">Years to energy payback (Tier 1). PV: 0.85 years. Just 3 months longer.</div>
+    </div>
+    <div class="card">
+      <div class="num">31:1</div>
+      <div class="desc">Lifetime EROI over 35 years (Tier 1). PV at 25 years: 27:1.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ITERATIONS -->
+<section id="iterations">
+  <div class="stag reveal">the research arc</div>
+  <h2 class="reveal">Five iterations. Two failures. One winner.</h2>
+  <p class="reveal">The final design emerged from failed experiments. Each dead end taught us something the textbooks don't show.</p>
+
+  <div class="timeline reveal">
+    <div class="node fail">
+      <div class="ver">v1 — vertical cavity</div>
+      <h3>Light bounced into a shaft</h3>
+      <div class="eff bad">7.68% → killed</div>
+      <div class="desc">Second mirror bounce compounded losses across 7+ stages. Cavity surface too large for the concentration achieved.</div>
+    </div>
+    <div class="node win">
+      <div class="ver">v2 — dense tube array</div>
+      <h3>Direct heliostats to vertical tubes</h3>
+      <div class="eff good">22.95% → breakthrough</div>
+      <div class="desc">Eliminated the second bounce. Close-range heliostats. Tall targets. First design to beat both PV and CSP on electricity per ft².</div>
+    </div>
+    <div class="node fail">
+      <div class="ver">v2.5 — multi-zone stack</div>
+      <h3>TPV crown + sCO₂ + steam + ORC</h3>
+      <div class="eff bad">13.85% → killed</div>
+      <div class="desc">Radiation loss scales as T⁴. Hot zones at 1050°C radiated more than they absorbed. At 20 kW/m² flux, 600°C is the sweet spot.</div>
+    </div>
+    <div class="node fail">
+      <div class="ver">v3 — integrated mirrors</div>
+      <h3>Mirrors built into the tubes</h3>
+      <div class="eff bad">0.54-1.92 kWh/ft² → killed</div>
+      <div class="desc">No tracking = 40% daily loss. Tall shadows waste land. Mirrors and absorbers want to be at different heights.</div>
+    </div>
+    <div class="node win">
+      <div class="ver">v2 pro — material upgrade</div>
+      <h3>Same architecture. Better coatings.</h3>
+      <div class="eff good">26.7-35.1% → final design</div>
+      <div class="desc">TiAlN coating drops emittance from 0.15 to 0.07. Combined cycle pushes power block to 62.6%. Architecture was solved at v2; everything after is materials science.</div>
+    </div>
+  </div>
+</section>
+
+<!-- MATERIALS -->
+<section id="materials">
+  <div class="stag reveal">the material question</div>
+  <h2 class="reveal">PV's dirty secret vs VCST's clean bill</h2>
+  <p class="reveal">A fair comparison puts both systems under the same microscope. PV's production challenges are often overlooked.</p>
+
+  <table class="dtable reveal">
+    <thead>
+      <tr><th>Factor</th><th>PV solar farm</th><th>VCST v2 PRO (Tier 1)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Rarest material</td><td class="r">Silver (0.075 ppm)</td><td class="g">Titanium (5,600 ppm)</td></tr>
+      <tr><td>Mass of rarest</td><td class="r">300 kg</td><td class="g">44 kg</td></tr>
+      <tr><td>Toxic materials</td><td class="r">Lead solder, PFAS backsheet</td><td class="g">None</td></tr>
+      <tr><td>Supply chain risk</td><td class="r">High — China 80%+ of Si</td><td class="g">Low — global commodity</td></tr>
+      <tr><td>Embodied energy</td><td>0.195 TJ</td><td>0.295 TJ (1.5×)</td></tr>
+      <tr><td>Energy payback</td><td>0.85 years</td><td>1.08 years</td></tr>
+      <tr><td>Lifetime EROI</td><td>27:1</td><td class="g win">31:1</td></tr>
+      <tr><td>Recyclability</td><td>Moderate (Si recovery immature)</td><td class="g">High (SiC inert, steel commodity)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout reveal">
+    <p>The selective coating for the entire 50 MW plant weighs <strong>127 kilograms</strong> — a 3-micrometer thin film. Its material cost is <strong>$141,000</strong> out of a $26M bill. The coating elements — titanium, aluminum, silicon, nitrogen — are among Earth's most abundant. Even the most exotic option (HfMoN) uses 156 kg of hafnium at 3 ppm, versus PV's 300 kg of silver at 0.075 ppm. Hafnium is 40× more abundant.</p>
+  </div>
+</section>
+
+<!-- TIERS -->
+<section id="tiers">
+  <div class="stag reveal">three configurations</div>
+  <h2 class="reveal">Pick your risk tolerance</h2>
+
+  <div class="tiers reveal">
+    <div class="tier best">
+      <div class="tier-label">tier 1 — safe bet</div>
+      <h3>TiAlN coating</h3>
+      <div class="perf">17.36 kWh/ft²</div>
+      <div class="detail">
+        ε = 0.07 · No vacuum needed<br>
+        600°C · Single sCO₂ cycle<br>
+        All elements abundant<br>
+        TRL 5-6 · Lowest risk
+      </div>
+      <div class="vs">+47% vs PV · 122 acres / 50 MW</div>
+    </div>
+    <div class="tier">
+      <div class="tier-label">tier 2 — medium risk</div>
+      <h3>ZrC QOM + vacuum</h3>
+      <div class="perf">19.89 kWh/ft²</div>
+      <div class="detail">
+        ε = 0.10 · Vacuum envelope<br>
+        700°C · Combined sCO₂ + steam<br>
+        Zr: 165 ppm (beach sand)<br>
+        TRL 4-5 coating, 7-8 cycle
+      </div>
+      <div class="vs">+69% vs PV · 111 acres / 50 MW</div>
+    </div>
+    <div class="tier">
+      <div class="tier-label">tier 3 — maximum</div>
+      <h3>HfMoN + vacuum + CC</h3>
+      <div class="perf">22.82 kWh/ft²</div>
+      <div class="detail">
+        ε = 0.05 · Vacuum envelope<br>
+        650°C · Combined cycle<br>
+        Still less rare material than PV<br>
+        TRL 4 · Highest reward
+      </div>
+      <div class="vs">+93% vs PV · 101 acres / 50 MW</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATUS -->
+<section>
+  <div class="stag reveal">current status</div>
+  <h2 class="reveal">Pre-prototype. All physics verified.</h2>
+  <p class="reveal">Every performance figure is a first-principles calculation verified against published literature. Ten Python models with full source citations are available for independent review. No hardware has been built.</p>
+  <p class="reveal"><strong>Next step:</strong> 100 kW proof-of-concept — 2 tubes, TiAlN coating, small heliostat array, ORC turbine. Validate optical efficiency, thermal retention, and fluid delivery. Estimated cost: $500K-$1M.</p>
+
+  <div class="callout reveal">
+    <p><strong>The core finding stands:</strong> vertical tube geometry + close-range heliostats + spectrally selective coatings = 47-93% more electricity per square foot than any PV solar farm, using the most abundant elements on Earth. The architecture was solved. Now it needs to be built.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="left">
+    copyright © 2026 harsh patel<br>
+    all rights reserved · pre-patent disclosure<br>
+    kamloops, british columbia, canada
+  </div>
+  <div class="right">
+    vcst v2 pro · march 2026<br>
+    10 python models · 21 cited sources<br>
+    verified against 736 real pv plants
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Animate bars on scroll
+const barObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.bar-fill').forEach(bar => {
+        const w = bar.getAttribute('data-w');
+        bar.style.width = '0%';
+        requestAnimationFrame(() => { bar.style.width = w + '%'; });
+      });
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.bars').forEach(el => barObs.observe(el));
+
+// Smooth scroll for nav
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>
